@@ -11,10 +11,10 @@ Aplikasi pengunduh video sederhana yang dirancang untuk memudahkan pengguna meng
 ## 📸 Preview
 
 ### 🏠 Homepage
-![Homepage](Preview/Screenshot (79).png)
+![Homepage](Preview/Teto.png)
 
 ### ▶️ YouTube Downloader
-![YouTube](screenshots/youtube.png)
+![YouTube](screenshots/Rei.png)
 
 ### 🎵 TikTok Downloader
 ![TikTok](screenshots/tiktok.png)
