@@ -4,6 +4,6 @@ Aplikasi pengunduh video sederhana yang dirancang untuk memudahkan pengguna meng
 
 # ✨ Fitur Utama:
 
-### ▶️ Mendukung video dari YouTube.
-### 📸 Mendukung video dari Instagram.
-### 🎵 Mendukung video dari TikTok.
+#### ▶️ Mendukung video dari YouTube.
+#### 📸 Mendukung video dari Instagram.
+#### 🎵 Mendukung video dari TikTok.
