@@ -20,9 +20,9 @@ Aplikasi pengunduh video sederhana yang dirancang untuk memudahkan pengguna meng
 ## 📸 Preview
 
 ### 🥖 Teto
-![Homepage](Preview/Teto.png)
+![Teto](Preview/Teto.png)
 
-### ⚔ Rei
-![YouTube](Preview/Makoto.png)
+### ⚔ Makoto
+![Makoto](Preview/Makoto.png)
 
 
