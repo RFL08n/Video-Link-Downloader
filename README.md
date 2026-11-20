@@ -11,7 +11,7 @@ Aplikasi pengunduh video sederhana yang dirancang untuk memudahkan pengguna meng
 ## 📸 Preview
 
 ### 🏠 Homepage
-![Homepage](screenshots/home.png)
+![Homepage](Preview/Screenshot (79).png)
 
 ### ▶️ YouTube Downloader
 ![YouTube](screenshots/youtube.png)
