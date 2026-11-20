@@ -1,0 +1,5 @@
+Pastikan file harus exe atau download lewat terminal!
+
+Deno and yt-dlp 
+(https://github.com/denoland/deno)
+(https://github.com/yt-dlp/yt-dlp)
