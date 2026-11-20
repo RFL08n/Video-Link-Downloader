@@ -1,0 +1,1695 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>TETO & MAKOTO Downloader</title>
+    <style>
+        :root {
+            --teto-magenta: #d2004c;
+            --teto-dark: #2b2b2b;
+            --teto-light: #d3cacd;
+
+            --makoto-blue: #1269cc;
+            --makoto-orange: #ff5500;
+            --makoto-dark: #1f1f24;
+            --makoto-light: #e3e5e8;
+            --makoto-accent: #2e8fff;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #2b2929;
+            color: var(--teto-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+            height: 100vh;
+            box-sizing: border-box;
+            transition: background-color 0.4s ease;
+        }
+
+        body.makoto-mode {
+            background: linear-gradient(130deg, #1269cc, #ffffff, #1269cc);
+            color: var(--makoto-dark);
+        }
+
+        .top-nav {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: var(--makoto-dark);
+            color: #fff;
+            border: 3px solid var(--makoto-accent);
+            padding: 10px 18px;
+            font-weight: 900;
+            font-size: 15px;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 4px 4px 0px var(--makoto-accent);
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px var(--makoto-accent);
+            background: var(--makoto-accent);
+            color: #fff;
+        }
+
+        .makoto-mode .nav-btn {
+            background: var(--teto-dark);
+            color: var(--teto-light);
+            border: 3px solid var(--teto-magenta);
+            box-shadow: 4px 4px 0px var(--teto-magenta);
+        }
+
+        .makoto-mode .nav-btn:hover {
+            background: var(--teto-magenta);
+            color: #fff;
+            box-shadow: 6px 6px 0px var(--teto-magenta);
+        }
+
+        .version-badge {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: var(--teto-dark);
+            color: var(--teto-light);
+            border: 3px solid var(--teto-magenta);
+            box-shadow: 4px 4px 0px var(--teto-magenta);
+            padding: 8px 14px;
+            font-weight: 900;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+            user-select: none;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .version-badge:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px var(--teto-magenta);
+            background: #3a3a3a;
+        }
+
+        .version-badge a {
+            color: #ff6b9d;
+            text-decoration: none;
+            border-bottom: 1px dashed #ff6b9d;
+        }
+
+        .version-badge a:hover {
+            color: #fff;
+        }
+
+        .makoto-mode .version-badge {
+            background: var(--makoto-dark);
+            color: var(--makoto-light);
+            border-color: var(--makoto-accent);
+            box-shadow: 4px 4px 0px var(--makoto-accent);
+        }
+
+        .makoto-mode .version-badge:hover {
+            box-shadow: 6px 6px 0px var(--makoto-accent);
+        }
+
+        .makoto-mode .version-badge a {
+            color: #7cc4ff;
+            border-bottom-color: #7cc4ff;
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.78);
+            z-index: 50000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-backdrop.show {
+            display: flex;
+        }
+
+        .warning-modal {
+            background: var(--teto-light);
+            color: var(--teto-dark);
+            border: 5px solid var(--teto-dark);
+            box-shadow: 10px 10px 0px var(--teto-magenta);
+            max-width: 540px;
+            width: 100%;
+            padding: 24px;
+            position: relative;
+        }
+
+        .makoto-mode .warning-modal {
+            background: var(--makoto-light);
+            color: var(--makoto-dark);
+            border-color: var(--makoto-dark);
+            box-shadow: 10px 10px 0px var(--makoto-accent);
+        }
+
+        .warning-modal h3 {
+            margin: 0 0 12px 0;
+            text-transform: uppercase;
+            font-size: 20px;
+            color: var(--teto-magenta);
+        }
+
+        .makoto-mode .warning-modal h3 {
+            color: var(--makoto-blue);
+        }
+
+        .warning-modal p {
+            margin: 0 0 12px 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .warning-list {
+            background: #fff;
+            border: 3px solid var(--teto-dark);
+            padding: 12px 16px;
+            margin: 0 0 14px 0;
+            font-size: 13px;
+            line-height: 1.65;
+        }
+
+        .warning-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .repo-link-btn {
+            display: inline-block;
+            background: var(--teto-dark);
+            color: #fff;
+            text-decoration: none;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 900;
+            border: 2px solid var(--teto-dark);
+        }
+
+        .repo-link-btn:hover {
+            background: var(--teto-magenta);
+        }
+
+        .makoto-mode .repo-link-btn:hover {
+            background: var(--makoto-blue);
+            color: #fff;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            background: var(--teto-dark);
+            color: #fff;
+            border: 3px solid var(--teto-dark);
+            padding: 8px 16px;
+            font-weight: 900;
+            font-size: 13px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .modal-btn.primary {
+            background: var(--teto-magenta);
+        }
+
+        .makoto-mode .modal-btn.primary {
+            background: var(--makoto-blue);
+            color: #fff;
+        }
+
+        .quick-path-box {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 100;
+            background: var(--teto-light);
+            border: 4px solid var(--teto-dark);
+            box-shadow: 6px 6px 0px var(--teto-magenta);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 120px;
+            transition: 0.3s ease;
+        }
+
+        .quick-path-title {
+            font-weight: 900;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--teto-dark);
+            letter-spacing: 1px;
+            text-align: center;
+            border-bottom: 2px solid var(--teto-dark);
+            padding-bottom: 4px;
+            margin-bottom: 2px;
+        }
+
+        .teto-quick-btn {
+            background: var(--teto-dark);
+            color: var(--teto-light);
+            border: 2px solid var(--teto-dark);
+            padding: 8px;
+            font-size: 12px;
+            font-weight: 900;
+            cursor: pointer;
+            text-transform: uppercase;
+            text-align: center;
+            transition: 0.2s;
+        }
+
+        .teto-quick-btn:hover {
+            background: var(--teto-magenta);
+            color: #fff;
+            border-color: var(--teto-dark);
+        }
+
+        .makoto-mode .quick-path-box {
+            background: var(--makoto-light);
+            border-color: var(--makoto-dark);
+            box-shadow: 6px 6px 0px var(--makoto-accent);
+        }
+
+        .makoto-mode .quick-path-title {
+            color: var(--makoto-dark);
+            border-bottom-color: var(--makoto-dark);
+        }
+
+        .makoto-mode .teto-quick-btn {
+            background: var(--makoto-dark);
+            color: var(--makoto-light);
+            border-color: var(--makoto-dark);
+        }
+
+        .makoto-mode .teto-quick-btn:hover {
+            background: var(--makoto-accent);
+            color: #fff;
+        }
+
+        #splashScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #1a1a1a;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+
+        #splashScreen.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .splash-logo {
+            width: 450px;
+            max-width: 80vw;
+            filter: invert(1) drop-shadow(0 0 15px var(--teto-magenta));
+            animation: glitchIntro 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+        }
+
+        @keyframes glitchIntro {
+            0% {
+                transform: scale(0.7);
+                opacity: 0;
+                filter: invert(1) hue-rotate(0deg);
+            }
+
+            30% {
+                transform: scale(1.05);
+                opacity: 1;
+                filter: invert(1) drop-shadow(5px -5px 0px #00ffff);
+            }
+
+            50% {
+                transform: scale(0.98);
+                filter: invert(1) drop-shadow(-5px 5px 0px var(--teto-magenta));
+            }
+
+            70% {
+                transform: scale(1.02);
+                filter: invert(1) drop-shadow(2px -2px 0px #00ff66);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+                filter: invert(1) drop-shadow(0 0 10px var(--teto-magenta));
+            }
+        }
+
+        .ui-box {
+            background: var(--teto-light);
+            border: 5px solid var(--teto-dark);
+            box-shadow: 10px 10px 0px var(--teto-magenta);
+            padding: 30px;
+            width: 500px;
+            position: relative;
+            z-index: 2;
+            animation: fadeInUI 0.8s ease 0.3s both;
+            transition: margin-left 0.25s ease;
+        }
+
+        .ui-box.shifted-right {
+            margin-left: 165px;
+        }
+
+        .makoto-ui-box {
+            background: var(--makoto-light);
+            border: 5px solid var(--makoto-dark);
+            box-shadow: 10px 10px 0px var(--makoto-accent);
+        }
+
+        @keyframes fadeInUI {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .media-preview-box {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 155px;
+            width: 280px;
+            max-width: calc(100vw - 175px);
+            padding: 14px;
+            transform: translateY(-50%);
+            background: var(--teto-light);
+            border: 4px solid var(--teto-dark);
+            box-shadow: 8px 8px 0px var(--teto-magenta);
+            z-index: 3;
+        }
+
+        .media-preview-box.teto-preview {
+            border-color: var(--teto-magenta);
+            box-shadow: 8px 8px 0px var(--teto-magenta);
+        }
+
+        .media-preview-box.teto-preview h3 {
+            color: var(--teto-magenta);
+        }
+
+        .makoto-mode .media-preview-box,
+        .media-preview-box.makoto-preview {
+            background: var(--makoto-light);
+            border-color: var(--makoto-dark);
+            box-shadow: 8px 8px 0px var(--makoto-accent);
+        }
+
+        .media-preview-box.makoto-preview h3 {
+            color: var(--makoto-blue);
+        }
+
+        .media-preview-box h3 {
+            margin: 0 0 10px;
+            font-size: 16px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .media-preview-box .video-preview {
+            display: block;
+            margin: 0;
+            overflow-wrap: anywhere;
+        }
+
+        .video-preview iframe {
+            display: block;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border: 3px solid var(--teto-dark);
+            background: #000;
+        }
+
+        .video-preview-message {
+            margin: 0;
+            padding: 8px;
+            background: #fff;
+            border: 2px solid var(--teto-dark);
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .video-preview-link {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--teto-dark);
+        }
+
+        @media (max-width: 1180px) {
+            .ui-box.shifted-right {
+                margin-left: 210px;
+            }
+
+            .media-preview-box {
+                left: 145px;
+                width: 220px;
+            }
+        }
+
+        .character-img {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            height: 85vh;
+            max-height: 750px;
+            object-fit: contain;
+            filter: drop-shadow(-8px 0px 15px rgba(0, 0, 0, 0.5));
+            user-select: none;
+            pointer-events: auto;
+            cursor: pointer;
+            z-index: 1;
+            transition: transform 0.1s ease;
+        }
+
+        .character-img:active {
+            transform: scale(0.98);
+        }
+
+        .badge {
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            background: var(--teto-magenta);
+            color: var(--teto-light);
+            padding: 5px 15px;
+            font-weight: 900;
+            font-size: 24px;
+            border: 4px solid var(--teto-dark);
+            transform: rotate(-5deg);
+        }
+
+        .makoto-badge {
+            background: var(--makoto-accent);
+            color: #fff;
+            border-color: var(--makoto-dark);
+        }
+
+        h2 {
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 0;
+            position: relative;
+            animation: titleGlitchLoop 4s infinite;
+        }
+
+        @keyframes titleGlitchLoop {
+
+            0%,
+            90%,
+            100% {
+                transform: translate(0);
+                text-shadow: none;
+            }
+
+            92% {
+                transform: translate(-2px, 1px);
+                text-shadow: 2px 0px var(--teto-magenta), -2px -1px #00ffff;
+            }
+
+            94% {
+                transform: translate(2px, -1px);
+                text-shadow: -2px 1px var(--teto-magenta), 2px 1px #00ff66;
+            }
+
+            96% {
+                transform: translate(0);
+                text-shadow: none;
+            }
+        }
+
+        .makoto-ui-box h2 {
+            color: var(--makoto-blue);
+            animation: makotoGlitchLoop 4s infinite;
+        }
+
+        @keyframes makotoGlitchLoop {
+
+            0%,
+            90%,
+            100% {
+                transform: translate(0);
+                text-shadow: none;
+            }
+
+            92% {
+                transform: translate(-2px, 1px);
+                text-shadow: 2px 0px var(--makoto-accent), -2px -1px #7cc4ff;
+            }
+
+            94% {
+                transform: translate(2px, -1px);
+                text-shadow: -2px 1px var(--makoto-accent), 2px 1px #ffffff;
+            }
+
+            96% {
+                transform: translate(0);
+                text-shadow: none;
+            }
+        }
+
+        .row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .url-input {
+            flex-grow: 1;
+            padding: 12px;
+            font-size: 16px;
+            border: 3px solid var(--teto-dark);
+            font-weight: bold;
+        }
+
+        .makoto-ui-box .url-input {
+            border-color: var(--makoto-dark);
+        }
+
+        .setting-box {
+            padding: 12px 15px;
+            border: 3px solid #ccc;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.3s;
+        }
+
+        .active-box {
+            border-color: var(--teto-magenta);
+            background: #fff0f4;
+        }
+
+        .makoto-ui-box .active-box {
+            border-color: var(--makoto-accent);
+            background: #eef7ff;
+        }
+
+        .disabled {
+            opacity: 0.4;
+            filter: grayscale(100%);
+        }
+
+        select {
+            font-size: 16px;
+            padding: 5px;
+            border: 2px solid var(--teto-dark);
+            font-weight: bold;
+        }
+
+        .makoto-ui-box select {
+            border-color: var(--makoto-dark);
+        }
+
+        select:disabled {
+            cursor: not-allowed;
+        }
+
+        .download-btn {
+            width: 100%;
+            font-size: 22px;
+            padding: 15px;
+            font-weight: 900;
+            background: var(--teto-dark);
+            color: var(--teto-light);
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.2s;
+            border: 4px solid transparent;
+            margin-top: 5px;
+            animation: btnPulse 2s infinite alternate;
+        }
+
+        @keyframes btnPulse {
+            0% {
+                box-shadow: 0 0 0px var(--teto-magenta);
+            }
+
+            100% {
+                box-shadow: 0 0 12px var(--teto-magenta);
+            }
+        }
+
+        .download-btn:hover:not(:disabled) {
+            background: var(--teto-magenta);
+            border-color: var(--teto-dark);
+        }
+
+        .makoto-ui-box .download-btn {
+            background: var(--makoto-dark);
+            color: #fff;
+            animation: makotoBtnPulse 2s infinite alternate;
+        }
+
+        @keyframes makotoBtnPulse {
+            0% {
+                box-shadow: 0 0 0px var(--makoto-accent);
+            }
+
+            100% {
+                box-shadow: 0 0 12px var(--makoto-accent);
+            }
+        }
+
+        .makoto-ui-box .download-btn:hover:not(:disabled) {
+            background: var(--makoto-accent);
+            border-color: var(--makoto-dark);
+        }
+
+        .quick-path-btn {
+            background: var(--makoto-dark);
+            color: #fff;
+            border: 2px solid var(--makoto-accent);
+            padding: 5px 12px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.2s;
+        }
+
+        .quick-path-btn:hover {
+            background: var(--makoto-accent);
+            color: #fff;
+        }
+
+        .drop-zone {
+            border: 3px dashed var(--makoto-accent);
+            background: rgba(46, 143, 255, 0.08);
+            border-radius: 6px;
+            padding: 10px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--makoto-dark);
+            margin-bottom: 15px;
+            transition: 0.2s ease;
+        }
+
+        .drop-zone.dragover {
+            background: rgba(46, 143, 255, 0.25);
+            transform: scale(1.02);
+        }
+
+        label {
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #loadingView {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            padding: 40px;
+        }
+
+        .loading-card {
+            background: var(--teto-light);
+            border: 5px solid var(--teto-dark);
+            box-shadow: 10px 10px 0px var(--teto-magenta);
+            padding: 30px;
+            width: 600px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+        }
+
+        .makoto-mode .loading-card {
+            background: var(--makoto-light);
+            border-color: var(--makoto-dark);
+            box-shadow: 10px 10px 0px var(--makoto-accent);
+        }
+
+        .spinner-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .spinner {
+            width: 35px;
+            height: 35px;
+            border: 5px solid var(--teto-dark);
+            border-top: 5px solid var(--teto-magenta);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .makoto-mode .spinner {
+            border-color: var(--makoto-dark);
+            border-top-color: var(--makoto-accent);
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 25px;
+            border: 3px solid var(--teto-dark);
+            background: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .makoto-mode .progress-bar-container {
+            border-color: var(--makoto-dark);
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: var(--teto-magenta);
+            transition: width 0.2s ease;
+        }
+
+        .makoto-mode .progress-bar {
+            background: var(--makoto-accent);
+        }
+
+        .console-box {
+            width: 100%;
+            height: 150px;
+            background: var(--teto-dark);
+            color: #00ff66;
+            font-family: monospace;
+            font-size: 13px;
+            padding: 10px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            border: 3px solid #111;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .makoto-mode .console-box {
+            background: var(--makoto-dark);
+            color: #7cc4ff;
+        }
+
+        .console-box::-webkit-scrollbar {
+            display: none;
+        }
+
+        .console-box {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .cancel-btn {
+            background: var(--teto-magenta);
+            color: var(--teto-light);
+            border: 3px solid var(--teto-dark);
+            padding: 10px 20px;
+            font-weight: 900;
+            font-size: 16px;
+            cursor: pointer;
+            text-transform: uppercase;
+            align-self: flex-start;
+            box-shadow: 4px 4px 0px var(--teto-dark);
+            transition: 0.1s;
+        }
+
+        .makoto-mode .cancel-btn {
+            background: var(--makoto-accent);
+            color: #fff;
+            border-color: var(--makoto-dark);
+        }
+
+        .cancel-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px var(--teto-dark);
+        }
+
+        .cancel-btn:active {
+            transform: translate(0, 0);
+            box-shadow: 2px 2px 0px var(--teto-dark);
+        }
+
+        #transitionOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: var(--teto-magenta);
+            z-index: 99999;
+            clip-path: circle(0% at 50% 50%);
+            pointer-events: none;
+            transition: clip-path 0.7s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        #transitionOverlay.expand {
+            clip-path: circle(150% at 50% 50%);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="top-nav">
+        <button class="nav-btn" id="navSwitchBtn" onclick="switchPage()">Makoto Down</button>
+    </div>
+
+    <div class="version-badge" id="versionBadgeBtn" role="button" tabindex="0"
+        title="Klik untuk melihat Credits & License">
+        <span>v.1.0.0</span>
+        <span>|</span>
+        <span>Powered by <a href="https://github.com/yt-dlp/yt-dlp" target="_blank" rel="noopener"
+                onclick="event.stopPropagation()">yt-dlp</a></span>
+    </div>
+
+    <div class="quick-path-box">
+        <div class="quick-path-title">Quick Path</div>
+        <button class="teto-quick-btn" id="tetoSongBtn" type="button">song</button>
+        <button class="teto-quick-btn" id="tetoVideoBtn" type="button">video</button>
+    </div>
+
+    <div class="modal-backdrop" id="creditsModal">
+        <div class="warning-modal">
+            <h3>★ Credits & License</h3>
+            <p><b>Teto & Makoto Downloader</b> dibuat menggunakan VS Code sebagai proyek komunitas &amp; pembelajaran
+                lokal.</p>
+            <div class="warning-list">
+                <b>Kreator:</b><br>
+                • Team dari SMKN 2 Madiun:
+                <b>Muhamad Billal Rizki Pratama</b> &amp; <b>Rafly Ahmad Irfansyah</b>
+                <br><br>
+                <b>Engine &amp; Runtime (Open Source):</b><br>
+                • CLI Engine: <b>yt-dlp</b> (Unlicense — <a href="https://github.com/yt-dlp/yt-dlp" target="_blank"
+                    rel="noopener">github.com/yt-dlp/yt-dlp</a>)<br>
+                • Backend Runtime: <b>Deno</b> (MIT License — <a href="https://github.com/denoland/deno" target="_blank"
+                    rel="noopener">github.com/denoland/deno</a>)<br><br>
+                <b>Catatan Lisensi Karakter &amp; Aset:</b><br>
+                • Kasane Teto, dan Makoto Yuki beserta ilustrasi/audio terkait adalah milik kreator/pemegang
+                hak cipta masing-masing; digunakan non-komersial untuk keperluan antarmuka &amp; penggemar.
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn primary" id="closeCreditsBtn" type="button">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="envWarningModal">
+        <div class="warning-modal">
+            <h3>⚠ Runtime / Binary Belum Lengkap</h3>
+            <p>Karena file <b>yt-dlp.exe</b> dan <b>deno.exe</b> mungkin tidak disertakan di repository, pastikan
+                dependensi berikut tersedia di <code>.\assets\backend\</code> atau PATH sistem[cite: 14]:</p>
+            <div class="warning-list" id="envWarningDetails">Memeriksa environment...</div>
+            <div class="warning-links">
+                <a class="repo-link-btn" href="https://github.com/yt-dlp/yt-dlp/releases" target="_blank"
+                    rel="noopener">Download yt-dlp (GitHub)</a>
+                <a class="repo-link-btn" href="https://github.com/denoland/deno" target="_blank" rel="noopener">Deno
+                    Repo (GitHub)</a>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn" id="recheckModalBtn" type="button">Cek Ulang</button>
+                <button class="modal-btn primary" id="closeModalBtn" type="button">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="splashScreen">
+        <img src="./assets/photo/tetologo.png" alt="Teto Logo" class="splash-logo">
+    </div>
+
+    <div id="transitionOverlay"></div>
+
+    <div class="ui-box" id="tetoView">
+        <div class="badge">0401</div>
+        <h2>Teto Downloader</h2>
+
+        <div class="row">
+            <input type="text" id="urlInput" class="url-input" placeholder="Paste URL Here">
+        </div>
+
+        <div class="checkbox-row">
+            <label><input type="checkbox" id="chkPlaylist"> Playlist</label>
+            <label><input type="checkbox" id="chkMetadata"> Metadata</label>
+            <label><input type="checkbox" id="chkBatch"> Batch (-a)</label>
+            <label id="coverLabel"><input type="checkbox" id="chkCover"> Cover Image</label>
+        </div>
+
+        <div class="setting-box" id="videoSection">
+            <label><input type="checkbox" id="chkVideo" checked> Video Resolution</label>
+            <select id="videoRes">
+                <option value="2160">4K</option>
+                <option value="1440">2K</option>
+                <option value="1080" selected>1080p</option>
+                <option value="720">720p</option>
+                <option value="480">480p</option>
+                <option value="360">360p</option>
+                <option value="240">240p</option>
+                <option value="144">144p</option>
+            </select>
+        </div>
+
+        <div class="setting-box" id="audioSection">
+            <label><input type="checkbox" id="chkAudio"> Audio Quality</label>
+            <select id="audioQual">
+                <option value="0">Best</option>
+                <option value="5" selected>Medium</option>
+                <option value="9">Worst</option>
+            </select>
+        </div>
+
+        <div class="setting-box active-box" style="justify-content: center; gap: 20px;">
+            <label>Output Format:</label>
+            <select id="formatSelect"></select>
+        </div>
+
+        <div class="setting-box active-box" style="gap: 10px;">
+            <label style="font-size: 14px;">Save Folder:</label>
+            <input type="text" id="outputPath" value=".\downloads"
+                placeholder="Enter save folder path (e.g. .\downloads)"
+                style="flex-grow: 1; padding: 5px; font-size: 13px; border: 2px solid var(--teto-dark);">
+        </div>
+
+        <button class="download-btn" id="downloadBtn">Download</button>
+    </div>
+
+    <div class="ui-box makoto-ui-box" id="makotoView" style="display: none;">
+        <div class="badge makoto-badge">MAKOTO</div>
+        <h2>Makoto Downloader</h2>
+
+        <div class="drop-zone" id="makotoDropZone">
+            📁 Drag & Drop `.txt` file or paste TikTok links here
+        </div>
+
+        <div class="row">
+            <textarea id="makotoUrlInput" class="url-input" placeholder="Paste TikTok URL(s) Here" rows="2"
+                style="resize: vertical; font-family: inherit;"></textarea>
+        </div>
+
+        <div class="setting-box active-box" id="makotoVideoSection">
+            <label><input type="checkbox" id="makotoChkVideo" checked> Video Resolution</label>
+            <select id="makotoVideoRes">
+                <option value="1080" selected>1080p</option>
+                <option value="720">720p</option>
+                <option value="480">480p</option>
+            </select>
+        </div>
+
+        <div class="setting-box active-box" style="justify-content: space-between; align-items: center;">
+            <label>Audio Format:</label>
+            <span
+                style="font-weight: bold; color: var(--makoto-blue); border: 2px solid var(--makoto-dark); padding: 4px 12px; background: #fff;">MP3
+                (Automatic)</span>
+        </div>
+
+        <div class="setting-box active-box" style="gap: 10px;">
+            <label style="font-size: 14px;">Save Folder:</label>
+            <input type="text" id="makotoOutputPath" value=".\downloads\tiktok"
+                style="flex-grow: 1; padding: 5px; font-size: 13px; border: 2px solid var(--makoto-dark);">
+            <button class="quick-path-btn" id="quickVideoBtn">video</button>
+        </div>
+
+        <button class="download-btn" id="makotoDownloadBtn">Download TikTok</button>
+    </div>
+
+    <div class="media-preview-box" id="mediaPreviewBox">
+        <h3>Video Preview</h3>
+        <div class="video-preview" id="mediaPreviewContent" aria-live="polite"></div>
+    </div>
+
+    <img src="./assets/photo/official_illust_teto_sv.png" alt="Kasane Teto" class="character-img" id="tetoImage">
+    <img src="./assets/photo/makoto.png" alt="Makoto" class="character-img" id="makotoImage" style="display: none;"
+        onerror="this.onerror=null; this.src='./assets/photo/adachi_rei.png';">
+
+    <div id="loadingView">
+        <div class="loading-card">
+            <div class="badge" id="logBadge">LOG</div>
+            <div class="spinner-container">
+                <div class="spinner" id="loadingSpinner"></div>
+                <h3 id="statusText" style="margin: 0;">Downloading media...</h3>
+            </div>
+
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+
+            <div class="console-box" id="consoleLog">[System] Initializing download pipeline...\n</div>
+
+            <button class="cancel-btn" id="cancelBtn">Cancel / Back</button>
+        </div>
+    </div>
+
+    <audio id="transitionSound" src="./assets/sfx/Ulloadingdone.mp3" preload="auto"></audio>
+
+    <script>
+        let currentPage = 'teto';
+        let isYtDlpReady = true;
+
+        // Credits Modal Logic
+        const creditsModal = document.getElementById('creditsModal');
+        const versionBadgeBtn = document.getElementById('versionBadgeBtn');
+        const closeCreditsBtn = document.getElementById('closeCreditsBtn');
+
+        function openCreditsModal() {
+            creditsModal.classList.add('show');
+        }
+
+        function closeCreditsModal() {
+            creditsModal.classList.remove('show');
+        }
+
+        versionBadgeBtn.addEventListener('click', openCreditsModal);
+        versionBadgeBtn.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                openCreditsModal();
+            }
+        });
+        closeCreditsBtn.addEventListener('click', closeCreditsModal);
+        creditsModal.addEventListener('click', (e) => {
+            if (e.target === creditsModal) closeCreditsModal();
+        });
+
+        // Env Warning Modal Logic
+        const envWarningModal = document.getElementById('envWarningModal');
+        const envWarningDetails = document.getElementById('envWarningDetails');
+
+        function openWarningModal(htmlLines) {
+            envWarningDetails.innerHTML = htmlLines.join('<br>');
+            envWarningModal.classList.add('show');
+        }
+
+        function closeWarningModal() {
+            envWarningModal.classList.remove('show');
+        }
+
+        async function checkDependenciesUI(showModalIfMissing = true) {
+            if (window.location.protocol === 'file:') {
+                isYtDlpReady = false;
+                if (showModalIfMissing) {
+                    openWarningModal([
+                        '• <b>Deno</b> tidak terdeteksi atau server belum berjalan (halaman dibuka langsung via <code>file://</code>).',
+                        '• <b>yt-dlp.exe</b> tidak dapat dijalankan tanpa runtime Deno aktif.'
+                    ]);
+                }
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/check-env', { cache: 'no-store' });
+                if (!res.ok) throw new Error('Backend response not OK');
+                const data = await res.json();
+
+                const issues = [];
+                if (!data.deno?.found) {
+                    issues.push('• <b>Deno</b> runtime tidak terdeteksi.');
+                }
+                if (!data.ytDlp?.found) {
+                    issues.push('• <b>yt-dlp.exe</b> tidak ada di <code>.\\assets\\backend\\</code> maupun PATH sistem.');
+                }
+
+                if (issues.length > 0) {
+                    isYtDlpReady = false;
+                    if (showModalIfMissing) openWarningModal(issues);
+                } else {
+                    isYtDlpReady = true;
+                    closeWarningModal();
+                }
+            } catch {
+                isYtDlpReady = false;
+                if (showModalIfMissing) {
+                    openWarningModal([
+                        '• <b>Deno server</b> tidak merespons di <code>localhost:8000</code>.',
+                        '• Pastikan Deno terpasang dan <code>server.ts</code> berjalan.'
+                    ]);
+                }
+            }
+        }
+
+        document.getElementById('closeModalBtn').addEventListener('click', closeWarningModal);
+        document.getElementById('recheckModalBtn').addEventListener('click', () => checkDependenciesUI(true));
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const splash = document.getElementById('splashScreen');
+                if (splash) splash.classList.add('fade-out');
+                checkDependenciesUI(true);
+            }, 1400);
+        });
+
+        // Elements Teto
+        const chkVideo = document.getElementById('chkVideo');
+        const chkAudio = document.getElementById('chkAudio');
+        const videoSection = document.getElementById('videoSection');
+        const audioSection = document.getElementById('audioSection');
+        const videoRes = document.getElementById('videoRes');
+        const audioQual = document.getElementById('audioQual');
+        const formatSelect = document.getElementById('formatSelect');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const chkCover = document.getElementById('chkCover');
+        const coverLabel = document.getElementById('coverLabel');
+        const tetoView = document.getElementById('tetoView');
+        const tetoImage = document.getElementById('tetoImage');
+        const tetoUrlInput = document.getElementById('urlInput');
+
+        // Navigation and Quick Path elements
+        const topNav = document.querySelector('.top-nav');
+        const quickPathBox = document.querySelector('.quick-path-box');
+
+        // Quick path buttons logic
+        document.getElementById('tetoSongBtn').addEventListener('click', () => {
+            if (currentPage === 'teto') {
+                document.getElementById('outputPath').value = ".\\downloads\\song";
+            } else {
+                document.getElementById('makotoOutputPath').value = ".\\downloads\\song";
+            }
+        });
+
+        document.getElementById('tetoVideoBtn').addEventListener('click', () => {
+            if (currentPage === 'teto') {
+                document.getElementById('outputPath').value = ".\\downloads\\video\\yt";
+            } else {
+                document.getElementById('makotoOutputPath').value = ".\\downloads\\video\\tiktok";
+            }
+        });
+
+        // Elements Makoto
+        const makotoView = document.getElementById('makotoView');
+        const makotoImage = document.getElementById('makotoImage');
+        const makotoUrlInput = document.getElementById('makotoUrlInput');
+        const makotoDownloadBtn = document.getElementById('makotoDownloadBtn');
+        const makotoOutputPath = document.getElementById('makotoOutputPath');
+        const quickVideoBtn = document.getElementById('quickVideoBtn');
+        const makotoDropZone = document.getElementById('makotoDropZone');
+        const navSwitchBtn = document.getElementById('navSwitchBtn');
+        const mediaPreviewBox = document.getElementById('mediaPreviewBox');
+        const mediaPreviewContent = document.getElementById('mediaPreviewContent');
+
+        function syncPreviewLayout() {
+            const isVisible = mediaPreviewBox.style.display === 'block';
+            tetoView.classList.toggle('shifted-right', isVisible && currentPage === 'teto');
+            makotoView.classList.toggle('shifted-right', isVisible && currentPage === 'makoto');
+        }
+
+        function updateVideoPreview(input, preview, platform) {
+            preview.replaceChildren();
+            mediaPreviewBox.classList.remove('teto-preview', 'makoto-preview');
+            mediaPreviewBox.classList.add(`${platform === 'youtube' ? 'teto' : 'makoto'}-preview`);
+
+            const value = input.value.trim();
+            if (!value) {
+                mediaPreviewBox.style.display = 'none';
+                mediaPreviewBox.classList.remove('teto-preview', 'makoto-preview');
+                syncPreviewLayout();
+                return;
+            }
+
+            const firstUrl = value.split(/\s+/)[0];
+            let url;
+            try {
+                url = new URL(firstUrl.includes('://') ? firstUrl : `https://${firstUrl}`);
+            } catch {
+                mediaPreviewBox.style.display = 'none';
+                mediaPreviewBox.classList.remove('teto-preview', 'makoto-preview');
+                syncPreviewLayout();
+                return;
+            }
+
+            if (url.protocol !== 'https:' && url.protocol !== 'http:') {
+                mediaPreviewBox.style.display = 'none';
+                mediaPreviewBox.classList.remove('teto-preview', 'makoto-preview');
+                syncPreviewLayout();
+                return;
+            }
+
+            const hostname = url.hostname.toLowerCase();
+            let videoId = null;
+            let embedUrl = null;
+
+            if (platform === 'youtube') {
+                if (hostname === 'youtu.be') {
+                    videoId = url.pathname.split('/').filter(Boolean)[0];
+                } else if (['youtube.com', 'www.youtube.com', 'm.youtube.com', 'music.youtube.com'].includes(hostname)) {
+                    if (url.pathname === '/watch') {
+                        videoId = url.searchParams.get('v');
+                    } else {
+                        const pathParts = url.pathname.split('/').filter(Boolean);
+                        if (['shorts', 'embed', 'live'].includes(pathParts[0])) {
+                            videoId = pathParts[1];
+                        }
+                    }
+                }
+
+                if (videoId && /^[A-Za-z0-9_-]{11}$/.test(videoId)) {
+                    embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}`;
+                }
+            } else if (platform === 'tiktok' && (hostname === 'tiktok.com' || hostname.endsWith('.tiktok.com'))) {
+                const match = url.pathname.match(/\/video\/(\d+)(?:\/|$)/);
+                if (match) embedUrl = `https://www.tiktok.com/player/v1/${match[1]}`;
+            }
+
+            mediaPreviewBox.style.display = 'block';
+            syncPreviewLayout();
+
+            if (embedUrl) {
+                const iframe = document.createElement('iframe');
+                iframe.src = embedUrl;
+                iframe.title = `${platform} video preview`;
+                iframe.loading = 'lazy';
+                iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+                iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
+                iframe.allowFullscreen = true;
+                preview.appendChild(iframe);
+
+                const fallbackLink = document.createElement('a');
+                fallbackLink.className = 'video-preview-link';
+                fallbackLink.href = url.href;
+                fallbackLink.target = '_blank';
+                fallbackLink.rel = 'noopener noreferrer';
+                fallbackLink.textContent = `Buka video di ${platform === 'tiktok' ? 'TikTok' : 'YouTube'} jika preview gagal`;
+                preview.appendChild(fallbackLink);
+                return;
+            }
+
+            const message = document.createElement('p');
+            message.className = 'video-preview-message';
+            message.append('Preview tidak tersedia untuk tautan ini. ');
+
+            const link = document.createElement('a');
+            link.href = url.href;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.textContent = 'Buka tautan';
+            message.appendChild(link);
+            preview.appendChild(message);
+        }
+
+        tetoUrlInput.addEventListener('input', () => updateVideoPreview(tetoUrlInput, mediaPreviewContent, 'youtube'));
+        makotoUrlInput.addEventListener('input', () => updateVideoPreview(makotoUrlInput, mediaPreviewContent, 'tiktok'));
+
+        // Loading Elements
+        const loadingView = document.getElementById('loadingView');
+        const transitionOverlay = document.getElementById('transitionOverlay');
+        const consoleLog = document.getElementById('consoleLog');
+        const progressBar = document.getElementById('progressBar');
+        const statusText = document.getElementById('statusText');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const logBadge = document.getElementById('logBadge');
+
+        // EASTER EGG SOUND LOGIC
+        const tetoSounds = [
+            "teto-gets-a-job.mp3",
+            "teto-knows.mp3",
+            "teto-like.mp3",
+            "i-love-you-too-teto.mp3",
+            "your-bald-teto.mp3",
+            "i-love-you-teto.mp3",
+            "teto-yes.mp3",
+            "tetoing-it.mp3",
+            "awesommeee-teto.mp3",
+            "67-teto.mp3",
+            "teto-wav.mp3"
+        ];
+
+        let activeEasterEggSound = null;
+
+        function playSound(src) {
+            if (activeEasterEggSound) {
+                activeEasterEggSound.pause();
+                activeEasterEggSound.currentTime = 0;
+            }
+            activeEasterEggSound = new Audio(src);
+            activeEasterEggSound.play().catch(e => console.log("Audio trigger error:", e));
+        }
+
+        tetoImage.addEventListener('click', () => {
+            const randomSound = tetoSounds[Math.floor(Math.random() * tetoSounds.length)];
+            playSound(`/teto-sound/${randomSound}`);
+        });
+
+        makotoImage.addEventListener('click', () => {
+            playSound('/rei-sound/reibutonp.mp3');
+        });
+
+        let currentAbortController = null;
+
+        const videoFormats = ['mp4', 'mkv', 'webm', 'mov'];
+        const audioFormats = ['mp3', 'wav', 'm4a', 'flac'];
+
+        function updateTetoUI() {
+            if (chkVideo.checked) {
+                videoSection.classList.remove('disabled');
+                videoSection.classList.add('active-box');
+                videoRes.disabled = false;
+            } else {
+                videoSection.classList.add('disabled');
+                videoSection.classList.remove('active-box');
+                videoRes.disabled = true;
+            }
+
+            if (chkAudio.checked) {
+                audioSection.classList.remove('disabled');
+                audioSection.classList.add('active-box');
+                audioQual.disabled = false;
+            } else {
+                audioSection.classList.add('disabled');
+                audioSection.classList.remove('active-box');
+                audioQual.disabled = true;
+            }
+
+            const currentFormat = formatSelect.value;
+            formatSelect.innerHTML = '';
+
+            if (chkVideo.checked) {
+                videoFormats.forEach(fmt => formatSelect.add(new Option(fmt, fmt)));
+                downloadBtn.disabled = false; downloadBtn.style.opacity = "1";
+            } else if (chkAudio.checked && !chkVideo.checked) {
+                audioFormats.forEach(fmt => formatSelect.add(new Option(fmt, fmt)));
+                downloadBtn.disabled = false; downloadBtn.style.opacity = "1";
+            } else {
+                formatSelect.add(new Option("Select Media Type", ""));
+                downloadBtn.disabled = true; downloadBtn.style.opacity = "0.5";
+            }
+
+            if (videoFormats.includes(currentFormat) || audioFormats.includes(currentFormat)) {
+                formatSelect.value = currentFormat;
+            }
+
+            if (formatSelect.value === 'wav') {
+                chkCover.checked = false;
+                chkCover.disabled = true;
+                coverLabel.style.opacity = "0.4";
+            } else {
+                chkCover.disabled = false;
+                coverLabel.style.opacity = "1";
+            }
+        }
+
+        chkVideo.addEventListener('change', updateTetoUI);
+        chkAudio.addEventListener('change', updateTetoUI);
+        formatSelect.addEventListener('change', updateTetoUI);
+        updateTetoUI();
+
+        function switchPage() {
+            triggerTransition(() => {
+                if (currentPage === 'teto') {
+                    currentPage = 'makoto';
+                    document.body.classList.add('makoto-mode');
+                    tetoView.style.display = 'none';
+                    tetoImage.style.display = 'none';
+                    makotoView.style.display = 'block';
+                    makotoImage.style.display = 'block';
+                    updateVideoPreview(makotoUrlInput, mediaPreviewContent, 'tiktok');
+                    navSwitchBtn.innerText = 'Teto Down';
+                    transitionOverlay.style.background = 'var(--makoto-accent)';
+                } else {
+                    currentPage = 'teto';
+                    document.body.classList.remove('makoto-mode');
+                    makotoView.style.display = 'none';
+                    makotoImage.style.display = 'none';
+                    tetoView.style.display = 'block';
+                    tetoImage.style.display = 'block';
+                    updateVideoPreview(tetoUrlInput, mediaPreviewContent, 'youtube');
+                    navSwitchBtn.innerText = 'Makoto Down';
+                    transitionOverlay.style.background = 'var(--teto-magenta)';
+                }
+            });
+        }
+
+        quickVideoBtn.addEventListener('click', () => {
+            makotoOutputPath.value = ".\\downloads\\video\\tiktok";
+        });
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            makotoDropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            }, false);
+        });
+
+        makotoDropZone.addEventListener('dragover', () => makotoDropZone.classList.add('dragover'));
+        makotoDropZone.addEventListener('dragleave', () => makotoDropZone.classList.remove('dragover'));
+        makotoDropZone.addEventListener('drop', (e) => {
+            makotoDropZone.classList.remove('dragover');
+            const dt = e.dataTransfer;
+
+            if (dt.files && dt.files.length > 0) {
+                const file = dt.files[0];
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const text = event.target.result;
+                    extractAndSetTikTokUrl(text);
+                };
+                reader.readAsText(file);
+            } else {
+                const plainText = dt.getData('text');
+                if (plainText) extractAndSetTikTokUrl(plainText);
+            }
+        });
+
+        function extractAndSetTikTokUrl(content) {
+            makotoUrlInput.value = content.trim();
+            makotoUrlInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+
+        function triggerTransition(callback) {
+            const sound = document.getElementById('transitionSound');
+            if (sound) {
+                sound.currentTime = 0;
+                sound.play().catch(e => console.log("Audio play failed:", e));
+            }
+
+            transitionOverlay.classList.add('expand');
+            setTimeout(() => {
+                callback();
+                setTimeout(() => {
+                    transitionOverlay.classList.remove('expand');
+                }, 400);
+            }, 400);
+        }
+
+        async function executeDownload(payload) {
+            if (!isYtDlpReady) {
+                await checkDependenciesUI(true);
+                if (!isYtDlpReady) return;
+            }
+
+            loadingSpinner.style.display = 'block';
+            statusText.innerText = "Downloading media...";
+            progressBar.style.width = '100%';
+
+            logBadge.className = currentPage === 'makoto' ? 'badge makoto-badge' : 'badge';
+
+            triggerTransition(() => {
+                tetoView.style.display = 'none';
+                tetoImage.style.display = 'none';
+                makotoView.style.display = 'none';
+                makotoImage.style.display = 'none';
+
+                if (topNav) topNav.style.display = 'none';
+                if (quickPathBox) quickPathBox.style.display = 'none';
+                mediaPreviewBox.style.display = 'none';
+                syncPreviewLayout();
+
+                loadingView.style.display = 'flex';
+                consoleLog.innerText = `[System] Target URL/Batch payload received.\n[System] Dispatching request to yt-dlp...\n`;
+            });
+
+            currentAbortController = new AbortController();
+
+            try {
+                const response = await fetch('/download', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                    signal: currentAbortController.signal
+                });
+
+                if (!response.ok) throw new Error("Server error");
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value, { stream: true });
+                    consoleLog.innerText += chunk;
+                    consoleLog.scrollTop = consoleLog.scrollHeight;
+                }
+
+                statusText.innerText = "Download Complete!";
+                loadingSpinner.style.display = 'none';
+
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    consoleLog.innerText += `\n[Cancelled] Download aborted by user.\n`;
+                } else {
+                    consoleLog.innerText += `\n[Error] Connection or server error occurred.\n`;
+                }
+                statusText.innerText = "Failed / Cancelled";
+                loadingSpinner.style.display = 'none';
+            }
+        }
+
+        downloadBtn.addEventListener('click', () => {
+            const url = document.getElementById('urlInput').value;
+            if (!url) { alert("Please enter a URL or drag a batch file!"); return; }
+
+            const payload = {
+                url: url,
+                outputPath: document.getElementById('outputPath').value,
+                chkPlaylist: document.getElementById('chkPlaylist').checked,
+                chkMetadata: document.getElementById('chkMetadata').checked,
+                chkBatch: document.getElementById('chkBatch').checked,
+                chkCover: chkCover.checked,
+                chkVideo: chkVideo.checked,
+                videoRes: document.getElementById('videoRes').value,
+                chkAudio: chkAudio.checked,
+                audioQual: document.getElementById('audioQual').value,
+                formatSelect: formatSelect.value
+            };
+
+            executeDownload(payload);
+        });
+
+        makotoDownloadBtn.addEventListener('click', () => {
+            const url = makotoUrlInput.value.trim();
+            if (!url) { alert("Please enter a TikTok URL or drop a text file!"); return; }
+
+            const isVideo = document.getElementById('makotoChkVideo').checked;
+            const isBatch = url.includes('\n') || url.includes('\r') || url.split(/\s+/).length > 1;
+
+            const payload = {
+                url: url,
+                outputPath: makotoOutputPath.value,
+                chkPlaylist: false,
+                chkMetadata: false,
+                chkBatch: isBatch,
+                chkCover: false,
+                chkVideo: isVideo,
+                videoRes: document.getElementById('makotoVideoRes').value,
+                chkAudio: true,
+                audioQual: "0",
+                formatSelect: isVideo ? "mp4" : "mp3"
+            };
+
+            executeDownload(payload);
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            if (currentAbortController) {
+                currentAbortController.abort();
+            }
+
+            triggerTransition(() => {
+                loadingView.style.display = 'none';
+
+                if (topNav) topNav.style.display = 'flex';
+                if (quickPathBox) quickPathBox.style.display = 'flex';
+
+                if (currentPage === 'teto') {
+                    tetoView.style.display = 'block';
+                    tetoImage.style.display = 'block';
+                } else {
+                    makotoView.style.display = 'block';
+                    makotoImage.style.display = 'block';
+                }
+                updateVideoPreview(
+                    currentPage === 'teto' ? tetoUrlInput : makotoUrlInput,
+                    mediaPreviewContent,
+                    currentPage === 'teto' ? 'youtube' : 'tiktok'
+                );
+                loadingSpinner.style.display = 'block';
+                progressBar.style.width = '0%';
+                statusText.innerText = "Downloading media...";
+            });
+        });
+    </script>
+</body>
+
+</html>
+
+<!--
+
+Dibuat Dengan VScode
+
+Kelompok dari SMKN 2 MADIUN:
+Muhamad Billal Rizki Pratama
+Rafly Ahmad Irfansyah
+
+Backend/CLI engine powered by Deno and yt-dlp 
+(https://github.com/denoland/deno)
+(https://github.com/yt-dlp/yt-dlp)
+
+-->
