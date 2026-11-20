@@ -11,10 +11,10 @@ Aplikasi pengunduh video sederhana yang dirancang untuk memudahkan pengguna meng
 ## 📸 Preview
 
 ### 🏠 Test
-![Homepage](screenshots/Screenshot (79).png)
+![Homepage](Preview/Screenshot (79).png)
 
 ### ▶️ Test
-![Homepage](screenshots/Screenshot (80).png)
+![Homepage](Preview/Screenshot (80).png)
 
 #### Backend/CLI engine powered by Deno and yt-dlp 
 (https://github.com/denoland/deno)
