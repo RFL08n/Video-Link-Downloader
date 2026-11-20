@@ -8,6 +8,6 @@ Aplikasi pengunduh video sederhana yang dirancang untuk memudahkan pengguna meng
 #### 📸 Mendukung video dari Instagram.
 #### 🎵 Mendukung video dari TikTok.
 
-Backend/CLI engine powered by Deno and yt-dlp 
+#### Backend/CLI engine powered by Deno and yt-dlp 
 (https://github.com/denoland/deno)
 (https://github.com/yt-dlp/yt-dlp)
