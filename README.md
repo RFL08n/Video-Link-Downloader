@@ -5,8 +5,13 @@ Aplikasi pengunduh video sederhana yang dirancang untuk memudahkan pengguna meng
 ✨ Fitur Utama:
 
 📥 Mengunduh video melalui tautan URL.
+
 ▶️ Mendukung video dari YouTube.
+
 📸 Mendukung video dari Instagram.
+
 🎵 Mendukung video dari TikTok.
+
 ⚡ Proses pengunduhan yang praktis dan mudah digunakan.
+
 🎨 Antarmuka sederhana dan ramah pengguna.
