@@ -10,11 +10,14 @@ Aplikasi pengunduh video sederhana yang dirancang untuk memudahkan pengguna meng
 
 ## 📸 Preview
 
-### 🏠 Test
-![Homepage](Preview/Screenshot (79).png)
+### 🏠 Homepage
+![Homepage](screenshots/home.png)
 
-### ▶️ Test
-![Homepage](Preview/Screenshot (80).png)
+### ▶️ YouTube Downloader
+![YouTube](screenshots/youtube.png)
+
+### 🎵 TikTok Downloader
+![TikTok](screenshots/tiktok.png)
 
 #### Backend/CLI engine powered by Deno and yt-dlp 
 (https://github.com/denoland/deno)
