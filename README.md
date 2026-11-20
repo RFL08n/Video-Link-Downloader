@@ -1,6 +1,6 @@
 # 🎬 Video Downloader
 
-Aplikasi pengunduh video sederhana yang dirancang untuk memudahkan pengguna mengunduh dan menyimpan video dari berbagai platform, yaitu YouTube, Instagram, dan TikTok, hanya dengan menggunakan tautan video. Aplikasi ini hadir dengan desain antarmuka (UI) unik yang mengusung tema karakter Kasane Teto dan Rei, memberikan sentuhan visual yang menarik dan berbeda dari aplikasi downloader pada umumnya.
+Aplikasi pengunduh video sederhana yang dirancang untuk memudahkan pengguna mengunduh dan menyimpan video dari berbagai platform, yaitu YouTube, Instagram, dan TikTok, hanya dengan menggunakan tautan video. Aplikasi ini hadir dengan desain antarmuka (UI) unik yang mengusung tema karakter Kasane Teto dan Makoto Yuki, memberikan sentuhan visual yang menarik dan berbeda dari aplikasi downloader pada umumnya.
 
 ## ⚠️ **Disclaimer**
 
