@@ -5,7 +5,7 @@ Aplikasi pengunduh video sederhana yang dirancang untuk memudahkan pengguna meng
 # ⚠️ **Disclaimer**
 
 - 💻 Aplikasi ini saat ini hanya dirancang untuk digunakan pada PC dan laptop.
-- 🪟 Aplikasi telah dikembangkan dan diuji pada sistem operasi Windows.
+- 🔧 Aplikasi telah dikembangkan dan diuji pada sistem operasi Windows.
 - 🔍 Kompatibilitas dengan sistem operasi lain seperti Linux dan macOS belum diuji, sehingga belum dapat dipastikan apakah aplikasi dapat berjalan dengan baik.
 
 ## ✨ Fitur Utama:
