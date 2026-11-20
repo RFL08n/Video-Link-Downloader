@@ -2,7 +2,7 @@
 
 Aplikasi pengunduh video sederhana yang dirancang untuk memudahkan pengguna mengunduh dan menyimpan video dari berbagai platform media sosial, yaitu YouTube, Instagram, dan TikTok hanya dengan menggunakan tautan video.
 
-# ✨ Fitur Utama:
+## ✨ Fitur Utama:
 
 #### ▶️ Mendukung video dari YouTube.
 #### 📸 Mendukung video dari Instagram.
