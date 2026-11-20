@@ -7,6 +7,9 @@ Aplikasi pengunduh video sederhana yang dirancang untuk memudahkan pengguna meng
 - 💻 Aplikasi ini saat ini hanya dirancang untuk digunakan pada PC dan laptop.
 - 🔧 Aplikasi telah dikembangkan dan diuji pada sistem operasi Windows.
 - 🔍 Kompatibilitas dengan sistem operasi lain seperti Linux dan macOS belum diuji, sehingga belum dapat dipastikan apakah aplikasi dapat berjalan dengan baik.
+### Backend/CLI engine powered by Deno and yt-dlp 
+(https://github.com/denoland/deno)
+(https://github.com/yt-dlp/yt-dlp)
 
 ## ✨ Fitur Utama:
 
@@ -22,6 +25,4 @@ Aplikasi pengunduh video sederhana yang dirancang untuk memudahkan pengguna meng
 ### ❔ Rei
 ![YouTube](Preview/Rei.png)
 
-#### Backend/CLI engine powered by Deno and yt-dlp 
-(https://github.com/denoland/deno)
-(https://github.com/yt-dlp/yt-dlp)
+
