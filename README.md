@@ -22,7 +22,7 @@ Aplikasi pengunduh video sederhana yang dirancang untuk memudahkan pengguna meng
 ### 🥖 Teto
 ![Homepage](Preview/Teto.png)
 
-### ❔ Rei
-![YouTube](Preview/Rei.png)
+### ⚔ Rei
+![YouTube](Preview/Makoto.png)
 
 
