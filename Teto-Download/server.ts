@@ -89,10 +89,10 @@ Deno.serve({ port: 8000 }, async (req) => {
     }
   }
 
-  if (req.method === "GET" && url.pathname.startsWith("/rei-sound/")) {
+  if (req.method === "GET" && url.pathname.startsWith("/makoto-sound/")) {
     try {
-      const filename = decodeURIComponent(url.pathname.replace("/rei-sound/", ""));
-      const filePath = join("./assets/sfx/rei sound", filename);
+      const filename = decodeURIComponent(url.pathname.replace("/makoto-sound/", ""));
+      const filePath = join("./assets/sfx/makoto-sound", filename);
       const fileData = await Deno.readFile(filePath);
       return new Response(fileData, {
         headers: { "content-type": "audio/mpeg" },
